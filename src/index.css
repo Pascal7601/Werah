@@ -1,6 +1,20 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
 @import "tailwindcss";
+
+@layer base {
+  *, ::after, ::before {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    border-width: 0;
+    border-style: solid;
+  }
+}
 
 @theme {
   --color-bgmain: #f5f5f5;
   --color-bluemain: #2563eb;
+  --font-mont: "Montserrat", sans-serif;
+  --font-roboto: "Roboto", sans-serif;
 }
