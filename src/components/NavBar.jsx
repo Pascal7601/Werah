@@ -11,7 +11,7 @@ function NavBar() {
             Sign In
           </button>
         </Link>
-        <Link>
+        <Link to="/dashboard/new-job">
           <button className="bg-bluemain py-2 px-4 rounded-lg text-white cursor-pointer text-sm md:text-lg font-semibold md:font-medium">
             Post A Job
           </button>

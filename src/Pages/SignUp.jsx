@@ -11,6 +11,7 @@ import {
 import { Field, Form, Formik, ErrorMessage } from "formik";
 import * as Yup from "Yup";
 import { Link } from "react-router-dom";
+import { postUser } from "../utils";
 
 // --- Validation Schema ---
 const SignUpSchema = Yup.object().shape({
@@ -47,18 +48,18 @@ function SignUp() {
   const [showPassword, setShowPassword] = useState(false);
   const [showRepeatPassword, setShowRepeatPassword] = useState(false);
 
-  const handleSubmit = (values, { setSubmitting }) => {
+  const handleSubmit = async (values, { setSubmitting }) => {
     const payload = {
       email: values.email,
-      firstName: values.firstName,
-      lastName: values.lastName,
+      first_name: values.firstName,
+      last_name: values.lastName,
       password: values.password,
       role: role,
     };
-    console.log("submiting", payload);
-    setTimeout(() => {
-      setSubmitting(false);
-    }, 2000);
+    const response = await postUser(payload, "users/register");
+    console.log("Registration Successful:", response);
+    alert("Account created successfully! Please log in.");
+    setSubmitting(false);
   };
 
   return (

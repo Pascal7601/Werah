@@ -9,9 +9,11 @@ import {
   Briefcase,
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
+import { useAuthStore } from "../store/useAuth";
 
 function DashBoardSideBar({ isOpen, onClose, role }) {
   const location = useLocation();
+  const { logout } = useAuthStore();
 
   // Helper to highlight active link
   const NavItem = ({ to, icon: Icon, label }) => {
@@ -95,7 +97,10 @@ function DashBoardSideBar({ isOpen, onClose, role }) {
 
         {/* Bottom Actions */}
         <div className="p-4 border-t border-slate-100">
-          <button className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-red-600 rounded-lg hover:bg-red-50 w-full transition-colors font-mont">
+          <button
+            onClick={() => logout()}
+            className="flex items-center hover:cursor-pointer gap-3 px-4 py-3 text-sm font-medium text-red-600 rounded-lg hover:bg-red-50 w-full transition-colors font-mont"
+          >
             <LogOut className="w-5 h-5" />
             Sign Out
           </button>

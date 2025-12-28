@@ -6,21 +6,29 @@ import SignUp from "./Pages/SignUp";
 import RecruiterDashBoard from "./Pages/RecruiterDashBoard";
 import { useState } from "react";
 import CandidateDashBoard from "./Pages/CandidateDashBoard";
+import PostJob from "./Pages/PostJob";
+import { isRecruiter, useAuthStore } from "./store/useAuth";
+import { ProtectedRoute } from "./components/ProtectedRoute";
 
 function App() {
-  const [isRecruiter, setRecruiter] = useState(true);
+  const { user } = useAuthStore();
+
   return (
     <>
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<SignIn />} />
         <Route path="/sign-up" element={<SignUp />} />
-        <Route
-          path="/dashboard"
-          element={
-            isRecruiter ? <RecruiterDashBoard /> : <CandidateDashBoard />
-          }
-        />
+
+        <Route path="/dashboard" element={<ProtectedRoute />}>
+          <Route
+            index
+            element={
+              isRecruiter() ? <RecruiterDashBoard /> : <CandidateDashBoard />
+            }
+          />
+          <Route path=":new-job" element={<PostJob />} />
+        </Route>
       </Routes>
     </>
   );

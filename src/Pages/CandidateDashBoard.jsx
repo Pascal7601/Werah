@@ -8,14 +8,17 @@ import {
   MoreHorizontal,
 } from "lucide-react";
 import StatCard from "../components/StatCard";
+import { useAuthStore } from "../store/useAuth";
 
 function CandidateDashBoard() {
+  const { user } = useAuthStore();
+
   return (
     <DashboardLayout>
       {/* Header Section */}
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-slate-900">
-          Welcome back, Candidate! 👋
+          Welcome back, {user.username ? user.username : user.first_name} 👋
         </h1>
         <p className="text-slate-500 mt-1">
           Here is what's happening with your job search today.

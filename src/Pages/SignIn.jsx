@@ -1,9 +1,12 @@
-import React, { useState } from "react";
+import React, { use, useState } from "react";
 import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 import { Field, Form, Formik, ErrorMessage } from "formik";
 import * as Yup from "Yup";
 import { Link } from "react-router-dom";
 import { inputClass, labelClass } from "./SignUp";
+import { useAuthStore } from "../store/useAuth";
+import { useNavigate } from "react-router-dom";
+import { postUser } from "../utils";
 
 const SignInSchema = Yup.object().shape({
   email: Yup.string()
@@ -15,19 +18,29 @@ const SignInSchema = Yup.object().shape({
     .required("Password is required"),
 });
 
-const handleSubmit = (values, { setSubmitting }) => {
-  const payload = {
-    email: values.email,
-    password: values.password,
-  };
-  console.log("submiting", payload);
-  setTimeout(() => {
-    setSubmitting(false);
-  }, 2000);
-};
-
 function SignIn() {
   const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
+
+  //nhandles user details submission and updates auth store
+  const handleSubmit = async (values, { setSubmitting }) => {
+    const payload = {
+      email: values.email,
+      password: values.password,
+    };
+    try {
+      const response = await postUser(payload, "auth/login");
+      useAuthStore
+        .getState()
+        .login(response.access_token, response.user_details);
+      navigate("/dashboard");
+    } catch (error) {
+      console.error("Error during login:", error);
+      alert("Login failed. Please check your credentials and try again.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   return (
     <div className="w-full mx-auto max-w-sm py-6">
