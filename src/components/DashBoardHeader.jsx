@@ -1,6 +1,7 @@
 import React from "react";
 import { Menu, BellDot, CirclePlus } from "lucide-react";
 import { Link } from "react-router-dom";
+import { isRecruiter } from "../store/useAuth";
 
 function DashBoardHeader({ onMenuClick }) {
   return (
@@ -19,12 +20,14 @@ function DashBoardHeader({ onMenuClick }) {
 
         {/* Right Side: Actions & Profile */}
         <div className="flex gap-4 items-center">
-          <Link to="new-job">
-            <button className="hidden sm:flex items-center gap-2 hover:cursor-pointer bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors shadow-sm shadow-blue-600/20">
-              <span>Post A Job</span>
-              <CirclePlus className="w-4 h-4" />
-            </button>
-          </Link>
+          {isRecruiter() && (
+            <Link to="new-job">
+              <button className="hidden sm:flex items-center gap-2 hover:cursor-pointer bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors shadow-sm shadow-blue-600/20">
+                <span>Post A Job</span>
+                <CirclePlus className="w-4 h-4" />
+              </button>
+            </Link>
+          )}
 
           <button className="relative p-2 text-slate-400 hover:text-slate-600 transition-colors rounded-full hover:bg-slate-100">
             <BellDot className="w-6 h-6" />

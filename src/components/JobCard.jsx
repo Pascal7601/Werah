@@ -1,42 +1,88 @@
 import React from "react";
-import { MdLocationOn } from "react-icons/md";
-import { TbClockHour3Filled } from "react-icons/tb";
+import { MapPin, Clock } from "lucide-react";
+import { Link } from "react-router-dom";
+import { formatDistanceToNow } from "date-fns";
 
-function JobCard() {
+function JobCard({ job }) {
+  // Safe fallbacks
+  const companyName = job.company_name || "Unknown Company";
+  const initial = companyName.charAt(0).toUpperCase();
+
+  // Format Date (Handle if date is invalid)
+  let timeAgo = "Recently";
+  try {
+    if (job.posted_at) {
+      timeAgo = formatDistanceToNow(new Date(job.posted_at), {
+        addSuffix: true,
+      });
+    }
+  } catch (e) {
+    timeAgo = "Recently";
+  }
+
   return (
-    <div className="bg-white p-4 md:p-8  flex flex-col gap-3">
-      <div className="flex gap-3 items-center">
-        <div className="bg-blue-200 w-15 md:w-16 p-3 md:p-5 text-center">
-          <p>PP</p>
+    <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow flex flex-col gap-4">
+      {/* Header: Logo & Title */}
+      <div className="flex gap-4 items-center">
+        <div className="bg-blue-100 w-12 h-12 flex items-center justify-center rounded-lg shrink-0 text-blue-700 font-bold text-xl">
+          {job.company_logo ? (
+            <img
+              src={job.company_logo}
+              alt={companyName}
+              className="w-full h-full object-cover rounded-lg"
+            />
+          ) : (
+            <p>{initial}</p>
+          )}
         </div>
-        <div className="font-mont">
-          <p className="font-semibold md:font-semibold md:text-lg">
-            Senior Backend Engineer
-          </p>
-          <p className="text-sm md:text-lg">Malimali Solutions</p>
-        </div>
-      </div>
-      <div className="text-sm line-clamp-3 md:line-clamp-2 text-gray-600">
-        Lorem, ipsum dolor sit amet consectetur adipisicing elit. Distinctio
-        praesentium non laborum quam autem, deleniti quasi debitis doloribus
-        rerum ratione, sed aliquid explicabo ducimus minus eveniet molestiae,
-        possimus excepturi corrupti.
-      </div>
-      <div className="flex gap-9">
-        <div className="flex items-center gap-2 text-sm">
-          <MdLocationOn />
-          <p className="text-gray-400">Nairobi, Kenya</p>
-        </div>
-        <div className="flex items-center gap-2 text-sm">
-          <TbClockHour3Filled />
-          <p className="text-gray-400">2 hours ago</p>
+        <div className="overflow-hidden">
+          <h3
+            className="font-semibold text-slate-900 text-lg truncate"
+            title={job.title}
+          >
+            {job.title}
+          </h3>
+          <p className="text-slate-500 text-sm">{companyName}</p>
         </div>
       </div>
-      <div className="mx-auto">
-        <button className="bg-bluemain px-8 md:px-20 py-1 text-white font-semibold cursor-pointer">
+
+      {/* Skills Tags (Optional: Only show if skills exist) */}
+      {job.required_skills && job.required_skills.length > 0 && (
+        <div className="flex flex-wrap gap-2">
+          {job.required_skills.slice(0, 3).map((skill) => (
+            <span
+              key={skill.id || skill}
+              className="px-2 py-1 bg-slate-100 text-slate-600 text-xs rounded-md font-medium"
+            >
+              {typeof skill === "object" ? skill.name : skill}
+            </span>
+          ))}
+        </div>
+      )}
+
+      {/* Description */}
+      <div className="text-sm text-slate-600 line-clamp-3 leading-relaxed">
+        {job.description}
+      </div>
+
+      {/* Footer Meta */}
+      <div className="flex items-center gap-6 mt-auto pt-2 text-slate-500 text-sm">
+        <div className="flex items-center gap-1.5">
+          <MapPin className="w-4 h-4 text-blue-600" />
+          <p>{job.location || "Remote"}</p>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <Clock className="w-4 h-4 text-blue-600" />
+          <p>{timeAgo}</p>
+        </div>
+      </div>
+
+      {/* Action Button */}
+      <Link to={`/jobs/${job.id}`} className="block mt-2">
+        <button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2.5 rounded-lg font-semibold transition-colors shadow-sm">
           View Details
         </button>
-      </div>
+      </Link>
     </div>
   );
 }

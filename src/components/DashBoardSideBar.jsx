@@ -55,11 +55,13 @@ function DashBoardSideBar({ isOpen, onClose, role }) {
       >
         {/* Title Area */}
         <div className="h-16 flex items-center justify-between px-6 border-b border-slate-100">
-          <div className="flex items-center gap-2">
-            <span className="font-bold text-xl text-slate-900 font-mont">
-              Werah
-            </span>
-          </div>
+          <Link to="/">
+            <div className="flex items-center gap-2">
+              <span className="font-bold text-xl text-slate-900 font-mont">
+                Werah
+              </span>
+            </div>
+          </Link>
           <button
             onClick={onClose}
             className="lg:hidden text-slate-500 hover:text-slate-700"

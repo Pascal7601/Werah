@@ -9,10 +9,9 @@ import CandidateDashBoard from "./Pages/CandidateDashBoard";
 import PostJob from "./Pages/PostJob";
 import { isRecruiter, useAuthStore } from "./store/useAuth";
 import { ProtectedRoute } from "./components/ProtectedRoute";
+import JobDetails from "./Pages/JobDetails";
 
 function App() {
-  const { user } = useAuthStore();
-
   return (
     <>
       <Routes>
@@ -27,8 +26,9 @@ function App() {
               isRecruiter() ? <RecruiterDashBoard /> : <CandidateDashBoard />
             }
           />
-          <Route path=":new-job" element={<PostJob />} />
+          <Route path="new-job" element={<PostJob />} />
         </Route>
+        <Route path="/jobs/:id" element={<JobDetails />} />
       </Routes>
     </>
   );
