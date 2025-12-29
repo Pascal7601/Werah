@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import {
   MapPin,
   Briefcase,
@@ -7,13 +7,12 @@ import {
   Calendar,
   Globe,
   ArrowLeft,
-  Share2,
-  Bookmark,
 } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 import { API_BASE_URL } from "../utils";
 import { useQuery } from "@tanstack/react-query";
 import { formatDistanceToNow } from "date-fns";
+import DOMPurify from "dompurify";
 
 const fetchJobDetails = async (id) => {
   const response = await fetch(`${API_BASE_URL}/jobs/${id}/`);
@@ -24,6 +23,7 @@ const fetchJobDetails = async (id) => {
 };
 
 const JobDetails = () => {
+  // Fetch Job Details from the API
   const { id } = useParams();
   const {
     data: job,
@@ -33,6 +33,53 @@ const JobDetails = () => {
     queryKey: ["jobDetails", id],
     queryFn: () => fetchJobDetails(id),
   });
+  // --- Extract Meta Data from HTML String ---
+  const jobMeta = useMemo(() => {
+    if (!job?.description) return {};
+
+    try {
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(job.description, "text/html");
+
+      // Helper to find text by the title label (e.g. "Location", "Job Type")
+      const findValueByLabel = (labelText) => {
+        // Find all titles (e.g., <span class="jkey-title">Location</span>)
+        const titles = Array.from(doc.querySelectorAll(".jkey-title"));
+        const titleNode = titles.find((el) =>
+          el.textContent.toLowerCase().includes(labelText.toLowerCase())
+        );
+
+        if (titleNode) {
+          // The value is usually in the next sibling <span class="jkey-info">
+          const infoNode = titleNode.nextElementSibling;
+          return infoNode ? infoNode.textContent.trim() : null;
+        }
+        return null;
+      };
+
+      // Fallback for Salary: Look for "Salary:" text in paragraphs if not in key-info
+      const findSalaryInText = () => {
+        const paragraphs = Array.from(doc.querySelectorAll("p"));
+        const salaryP = paragraphs.find((p) =>
+          p.textContent.includes("Salary:")
+        );
+        return salaryP
+          ? salaryP.textContent.replace("Salary:", "").trim()
+          : null;
+      };
+
+      return {
+        location: findValueByLabel("Location"),
+        type: findValueByLabel("Job Type") || findValueByLabel("Job Field"),
+        salary: findSalaryInText(),
+        experience: findValueByLabel("Experience"),
+      };
+    } catch (e) {
+      console.error("Error parsing job description HTML", e);
+      return {};
+    }
+  }, [job]);
+
   if (isLoading) {
     return <div>Loading job details...</div>;
   }
@@ -40,8 +87,33 @@ const JobDetails = () => {
     return <div>Error loading job details: {error.message}</div>;
   }
 
+  // Sanitize job description to remove ads and unwanted content
+  const rawDescription = job.description || "";
+  const sanitizedDescription = DOMPurify.sanitize(rawDescription, {
+    USE_PROFILES: { html: true },
+    FORBID_TAGS: ["style", "script", "iframe", "object", "embed"],
+    FORBID_ATTR: ["onclick", "onmouseover"],
+  });
+
+  const displaySalary = jobMeta.salary || "Not Specified";
+  const displayType = jobMeta.type || "Not Specified";
+  const displayLocation = jobMeta.location || "Remote";
+
   return (
     <div className="min-h-screen bg-slate-50 font-sans pb-20">
+      {/*Custom CSS to hide specific scraped junk */}
+      <style>{`
+        /* Hide Ads and useless links from the scraped HTML */
+        #adbox, .adsbygoogle, .prompt-link, .view-all2, #read-in-ad {
+          display: none !important;
+        }
+        /* Style the scraped content */
+        .job-details ul { margin-bottom: 1rem; }
+        .job-details li { margin-bottom: 0.5rem; }
+        li p:last-child { display: none; }
+        /* Fix the outer LI wrapper if present */
+        li.job-description { list-style: none; margin: 0; padding: 0; }
+      `}</style>
       {/* Header / Navigation */}
       <div className="bg-white border-b border-slate-200 sticky top-0 z-30">
         <div className="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
@@ -86,7 +158,7 @@ const JobDetails = () => {
                     </div>
                     <div className="flex items-center gap-1.5">
                       <MapPin className="w-4 h-4" />
-                      {job.location ? job.location : "Remote"}
+                      {displayLocation}
                     </div>
                     <div className="flex items-center gap-1.5">
                       <Clock className="w-4 h-4" />
@@ -106,7 +178,7 @@ const JobDetails = () => {
               </h2>
               <div
                 className="prose prose-slate max-w-none text-slate-600"
-                dangerouslySetInnerHTML={{ __html: job.description }}
+                dangerouslySetInnerHTML={{ __html: sanitizedDescription }}
               />
             </div>
           </div>
@@ -126,7 +198,9 @@ const JobDetails = () => {
                     <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
                       Salary
                     </p>
-                    <p className="font-medium text-slate-900">{job.salary}</p>
+                    <p className="font-medium text-slate-900">
+                      {displaySalary}
+                    </p>
                   </div>
                 </div>
 
@@ -138,7 +212,7 @@ const JobDetails = () => {
                     <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
                       Job Type
                     </p>
-                    <p className="font-medium text-slate-900">{job.type}</p>
+                    <p className="font-medium text-slate-900">{displayType}</p>
                   </div>
                 </div>
 
@@ -150,19 +224,20 @@ const JobDetails = () => {
                     <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
                       Posted
                     </p>
-                    <p className="font-medium text-slate-900">{job.posted}</p>
+                    <p className="font-medium text-slate-900">
+                      {formatDistanceToNow(new Date(job.posted_at), {
+                        addSuffix: true,
+                      })}
+                    </p>
                   </div>
                 </div>
               </div>
 
-              <button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-blue-600/20 transition-all active:scale-[0.98]">
-                Apply Now
-              </button>
-
-              <button className="w-full mt-3 bg-white border border-slate-200 text-slate-700 font-semibold py-3.5 rounded-xl hover:bg-slate-50 transition-all flex items-center justify-center gap-2">
-                <Globe className="w-4 h-4" />
-                Visit Website
-              </button>
+              {job.is_external ? null : (
+                <button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-blue-600/20 transition-all active:scale-[0.98]">
+                  Apply Now
+                </button>
+              )}
             </div>
           </div>
         </div>

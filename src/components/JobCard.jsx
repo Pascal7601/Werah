@@ -2,6 +2,7 @@ import React from "react";
 import { MapPin, Clock } from "lucide-react";
 import { Link } from "react-router-dom";
 import { formatDistanceToNow } from "date-fns";
+import DOMPurify from "dompurify";
 
 function JobCard({ job }) {
   // Safe fallbacks
@@ -19,6 +20,14 @@ function JobCard({ job }) {
   } catch (e) {
     timeAgo = "Recently";
   }
+
+  // Sanitize job description to remove ads and unwanted content
+  const rawDescription = job.description || "";
+  const sanitizedDescription = DOMPurify.sanitize(rawDescription, {
+    USE_PROFILES: { html: true },
+    FORBID_TAGS: ["style", "script", "iframe", "object", "embed"],
+    FORBID_ATTR: ["onclick", "onmouseover"],
+  });
 
   return (
     <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow flex flex-col gap-4">
@@ -62,7 +71,7 @@ function JobCard({ job }) {
 
       {/* Description */}
       <div className="text-sm text-slate-600 line-clamp-3 leading-relaxed">
-        {job.description}
+        <div dangerouslySetInnerHTML={{ __html: sanitizedDescription }}></div>
       </div>
 
       {/* Footer Meta */}
