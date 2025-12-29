@@ -2,12 +2,20 @@ import React from "react";
 import JobCard from "./JobCard";
 import { API_BASE_URL } from "../utils";
 import { useQuery } from "@tanstack/react-query";
+import { Loader2, AlertCircle } from "lucide-react";
 
-function JobsSection() {
+function JobsSection({ searchTerm }) {
   const { data, error, isLoading } = useQuery({
-    queryKey: ["jobs"],
+    queryKey: ["jobs", searchTerm],
     queryFn: async () => {
-      const response = await fetch(`${API_BASE_URL}/jobs/`);
+      const params = new URLSearchParams();
+      if (searchTerm) {
+        params.append("title", searchTerm);
+      }
+      console.log("Fetching jobs with params:", params.toString());
+      const response = await fetch(
+        `${API_BASE_URL}/jobs/?${params.toString()}`
+      );
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
@@ -15,10 +23,19 @@ function JobsSection() {
     },
   });
   if (isLoading) {
-    return <div>Loading jobs...</div>;
+    return (
+      <div className="py-20 flex justify-center items-center">
+        <Loader2 className="animate-spin mx-auto w-10 h-10" />
+      </div>
+    );
   }
   if (error) {
-    return <div>Error loading jobs: {error.message}</div>;
+    return (
+      <div className="py-20 flex flex-col justify-center items-center text-center text-red-600">
+        <AlertCircle className="w-10 h-10 mb-4" />
+        <p>Error loading jobs: {error.message}</p>
+      </div>
+    );
   }
   console.log("Fetched jobs data:", data);
   return (

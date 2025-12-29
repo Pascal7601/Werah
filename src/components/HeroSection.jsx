@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import { CiSearch } from "react-icons/ci";
 import { BiCategory } from "react-icons/bi";
 import { IoDocumentTextOutline } from "react-icons/io5";
 import { MdLocationOn } from "react-icons/md";
+import { API_BASE_URL } from "../utils";
 
-function HeroSection() {
+function HeroSection({ searchTerm, setSearchTerm }) {
   return (
     <section className="pb-7">
       {/**Hero section text section */}
@@ -25,6 +26,8 @@ function HeroSection() {
           <CiSearch size={20} />
           <input
             type="text"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
             className="border-0 outline-0 w-full"
             placeholder="Search for a job..."
           />

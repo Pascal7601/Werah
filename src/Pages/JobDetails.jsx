@@ -111,6 +111,7 @@ const JobDetails = () => {
         .job-details ul { margin-bottom: 1rem; }
         .job-details li { margin-bottom: 0.5rem; }
         li p:last-child { display: none; }
+        .job-key-info { display: none; }
         /* Fix the outer LI wrapper if present */
         li.job-description { list-style: none; margin: 0; padding: 0; }
       `}</style>
@@ -233,7 +234,17 @@ const JobDetails = () => {
                 </div>
               </div>
 
-              {job.is_external ? null : (
+              {job.is_external ? (
+                <a
+                  href={job.external_url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="w-full mt-3 bg-white border border-slate-200 text-slate-700 font-semibold py-3.5 rounded-xl hover:bg-slate-50 transition-all flex items-center justify-center gap-2"
+                >
+                  <Globe className="w-4 h-4" />
+                  Apply Now
+                </a>
+              ) : (
                 <button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-blue-600/20 transition-all active:scale-[0.98]">
                   Apply Now
                 </button>
