@@ -10,6 +10,7 @@ import PostJob from "./Pages/PostJob";
 import { isRecruiter, useAuthStore } from "./store/useAuth";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import JobDetails from "./Pages/JobDetails";
+import { ToastContainer } from "react-toastify";
 
 function App() {
   return (
@@ -18,7 +19,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<SignIn />} />
         <Route path="/sign-up" element={<SignUp />} />
-
+        {/** Protected Routes */}
         <Route path="/dashboard" element={<ProtectedRoute />}>
           <Route
             index
@@ -30,6 +31,7 @@ function App() {
         </Route>
         <Route path="/jobs/:id" element={<JobDetails />} />
       </Routes>
+      <ToastContainer position="top-right" autoClose={3000} pauseOnHover />
     </>
   );
 }

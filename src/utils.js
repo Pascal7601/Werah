@@ -1,3 +1,5 @@
+import { toast } from "react-toastify";
+
 export const API_BASE_URL = "http://localhost:8000/api";
 
 // API Call to Sign In/ register User
@@ -10,7 +12,6 @@ export const postUser = async (payload, endpoint) => {
     body: JSON.stringify(payload),
   }).then((response) => {
     if (!response.ok) {
-      console.log("Response not ok:", response);
       throw new Error("Network response was not ok");
     }
     return response.json();

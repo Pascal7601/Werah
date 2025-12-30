@@ -9,9 +9,10 @@ import {
   EyeOff,
 } from "lucide-react";
 import { Field, Form, Formik, ErrorMessage } from "formik";
-import * as Yup from "Yup";
+import * as Yup from "yup";
 import { Link } from "react-router-dom";
 import { postUser } from "../utils";
+import { toast } from "react-toastify";
 
 // --- Validation Schema ---
 const SignUpSchema = Yup.object().shape({
@@ -57,8 +58,9 @@ function SignUp() {
       role: role,
     };
     const response = await postUser(payload, "users/register");
-    console.log("Registration Successful:", response);
-    alert("Account created successfully! Please log in.");
+    toast.success(
+      "Account created successfully! Please check your email to verify."
+    );
     setSubmitting(false);
   };
 

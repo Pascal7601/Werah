@@ -1,12 +1,13 @@
 import React, { use, useState } from "react";
 import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 import { Field, Form, Formik, ErrorMessage } from "formik";
-import * as Yup from "Yup";
+import * as Yup from "yup";
 import { Link } from "react-router-dom";
 import { inputClass, labelClass } from "./SignUp";
 import { useAuthStore } from "../store/useAuth";
 import { useNavigate } from "react-router-dom";
 import { postUser } from "../utils";
+import { toast } from "react-toastify";
 
 const SignInSchema = Yup.object().shape({
   email: Yup.string()
@@ -35,8 +36,7 @@ function SignIn() {
         .login(response.access_token, response.user_details);
       navigate("/dashboard");
     } catch (error) {
-      console.error("Error during login:", error);
-      alert("Login failed. Please check your credentials and try again.");
+      toast.error("Login failed. Please check your credentials and try again.");
     } finally {
       setSubmitting(false);
     }
