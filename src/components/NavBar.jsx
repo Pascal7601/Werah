@@ -15,17 +15,11 @@ function NavBar() {
     <nav className="bg-bgmain flex justify-center items-center flex-col md:flex-row md:justify-between md:px-4 gap-4 py-5">
       <div className="font-bold font-mont md:text-2xl">WERAH</div>
       <div className="flex gap-5 font-mont">
-        {isAuthenticated ? (
-          <Link to="/dashboard">
-            <button className={`${btnBaseClass} bg-white `}>Dashboard</button>
-          </Link>
-        ) : (
-          <Link to="/sign-up">
-            <button className="bg-bluemain py-2 px-4 rounded-lg text-white cursor-pointer text-sm md:text-lg font-semibold md:font-medium">
-              Sign Up
-            </button>
-          </Link>
-        )}
+        <Link to="/dashboard">
+          <button className="bg-bluemain py-2 px-4 rounded-lg text-white cursor-pointer text-sm md:text-lg font-semibold md:font-medium">
+            Post A Job
+          </button>
+        </Link>
 
         {/** conditionally render logout and login button when the user is authenticated */}
         {isAuthenticated ? (

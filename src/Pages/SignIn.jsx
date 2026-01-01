@@ -36,7 +36,7 @@ function SignIn() {
         .login(response.access_token, response.user_details);
       navigate("/dashboard");
     } catch (error) {
-      toast.error("Login failed. Please check your credentials and try again.");
+      toast.error(`Login failed. ${error}`);
     } finally {
       setSubmitting(false);
     }

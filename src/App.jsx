@@ -11,6 +11,7 @@ import { isRecruiter, useAuthStore } from "./store/useAuth";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import JobDetails from "./Pages/JobDetails";
 import { ToastContainer } from "react-toastify";
+import VerifyEmail from "./Pages/verifyEmail";
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
           <Route path="new-job" element={<PostJob />} />
         </Route>
         <Route path="/jobs/:id" element={<JobDetails />} />
+        <Route path="/auth/verify-email" element={<VerifyEmail />} />
       </Routes>
       <ToastContainer position="top-right" autoClose={3000} pauseOnHover />
     </>

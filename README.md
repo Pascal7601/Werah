@@ -1,16 +1,91 @@
-# React + Vite
+# Werah Frontend - Intelligent Job Platform
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+- The modern, responsive client interface for the Werah Job Ecosystem.
 
-Currently, two official plugins are available:
+## 📖 Project Overview
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- This frontend application serves as the user interface for the Werah Backend API. It is designed as a Single Page Application (SPA) that provides distinct, role-based experiences for Candidates and Recruiters.
 
-## React Compiler
+### Key UX Goals:
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- Zero-Latency Feel: Aggressive caching strategies ensure instant page loads.
+- Role-Based Security: Dynamic routing protects Recruiter tools from Candidates.
+- Seamless Application: One-click apply workflow via modal integration.
 
-## Expanding the ESLint configuration
+## 🚀 Key Features
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### 🔐 Authentication & Security
+
+- Custom Auth Flow: Integrated with the backend's JWT system, handling Access/Refresh token rotation transparently via Axios interceptors.
+- Role-Based Access Control (RBAC):
+- Public: Landing page, Job Search, Login/Register.
+- Candidate: Profile management, "My Applications" history.
+- Recruiter: Dashboard stats, "Post a Job" wizard, Applicant tracking.
+- Secure Route Guards: Custom <ProtectedRoute> wrapper redirects unauthorized users instantly.
+
+### 💼 Job Discovery (Public)
+
+- Instant Search: Real-time search with debouncing (500ms) to prevent API spam.
+- Infinite Scroll: Pagination logic implemented with useInfiniteQuery for browsing thousands of jobs smoothly.
+- Smart Job Details: Checks local cache first for job details (initialData) to render instantly before fetching fresh data in the background.
+
+### 👤 Candidate Experience
+
+- One-Click Apply: If logged in, candidates can apply via a modal that summarizes their profile.
+- External Redirects: Smartly detects scraped jobs and redirects users to the original company site (e.g., "Apply on LinkedIn").
+
+### 🏢 Recruiter Experience
+
+- Job Creation Wizard: Multi-step form built with Formik and Yup validation, including a custom tag input for skills.
+- Applicant Dashboard: View candidates ranked by the backend's Match Score algorithm.
+
+## 🛠️ Tech Stack
+
+- Core: React 18, Vite.
+- Styling: Tailwind CSS, Lucide React (Icons).
+
+### State Management:
+
+- Server State: TanStack Query (React Query) v5 - Handles caching, loading states, and deduplication.
+- Client State: Zustand - Handles synchronous session data (User User, Token, Role).
+- Forms: Formik + Yup.
+- Routing: React Router v6 (Nested Routes & Layouts).
+
+## 🏗️ Architecture
+
+### Hybrid State Management
+
+- I chose a hybrid approach to avoid the complexity of Redux while maintaining robustness.
+- Zustand acts as the "Session Store." It persists the JWT token and User Role to localStorage. This allows the app to know who you are instantly on refresh.
+- React Query acts as the "Data Store." It fetches business data (Jobs, Applications) and caches it. It automatically refetches data when it becomes stale or when the user refocuses the window.
+
+### Component Structure
+
+src/
+├── components/ # Reusable UI (Buttons, Cards, Modals)
+├── pages/ # Page views (JobDetails, PostJob, etc.)
+├── store/ # Zustand stores (AuthStore)
+├── utils.js # Constants & Helpers
+└── App.jsx # Routing & Route Guards
+
+## ⚡ Getting Started
+
+### Prerequisites
+
+Node.js 18+
+The Werah Backend running locally or remotely.
+
+1. Clone & Install
+   git clone [https://github.com/](https://github.com/)[Pascal7601]/[werah].git
+   cd [werah]
+   npm install
+
+2. Configure Environment
+   Create a .env file in the root:
+   API_BASE_URL=[http://127.0.0.1:8000/api](http://127.0.0.1:8000/api) # Or your deployed backend URL
+
+3. Run Development Server
+   npm run dev
+
+Open http://localhost:5173 to view the app. 4. Build for Production
+npm run build

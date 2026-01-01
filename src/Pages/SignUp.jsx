@@ -50,18 +50,22 @@ function SignUp() {
   const [showRepeatPassword, setShowRepeatPassword] = useState(false);
 
   const handleSubmit = async (values, { setSubmitting }) => {
-    const payload = {
-      email: values.email,
-      first_name: values.firstName,
-      last_name: values.lastName,
-      password: values.password,
-      role: role,
-    };
-    const response = await postUser(payload, "users/register");
-    toast.success(
-      "Account created successfully! Please check your email to verify."
-    );
-    setSubmitting(false);
+    try {
+      const payload = {
+        email: values.email,
+        first_name: values.firstName,
+        last_name: values.lastName,
+        password: values.password,
+        role: role,
+      };
+      const response = await postUser(payload, "users/register");
+      toast.success(`success: ${response.message}.`);
+    } catch (error) {
+      console.error("Registration error:", error);
+      toast.error(`Registration failed. ${error || "Please try again."}`);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (

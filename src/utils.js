@@ -1,19 +1,30 @@
 import { toast } from "react-toastify";
 
-export const API_BASE_URL = "http://localhost:8000/api";
+export const API_BASE_URL = "https://werah.me/api";
 
 // API Call to Sign In/ register User
 export const postUser = async (payload, endpoint) => {
-  return await fetch(`${API_BASE_URL}/${endpoint}/`, {
+  const response = await fetch(`${API_BASE_URL}/${endpoint}/`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify(payload),
-  }).then((response) => {
-    if (!response.ok) {
-      throw new Error("Network response was not ok");
-    }
-    return response.json();
   });
+
+  const data = await response.json();
+  console.log("API response data:", data);
+
+  // Check if request failed
+  if (!response.ok) {
+    // Create an Error object
+    const error = new Error(data.detail || "Something went wrong");
+
+    // Attach the backend validation errors  to the error object
+    error.validationErrors = data;
+
+    throw error;
+  }
+
+  return data;
 };
