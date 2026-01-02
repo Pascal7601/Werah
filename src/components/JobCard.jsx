@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { MapPin, Clock } from "lucide-react";
 import { Link } from "react-router-dom";
 import { formatDistanceToNow } from "date-fns";
@@ -8,6 +8,40 @@ function JobCard({ job }) {
   // Safe fallbacks
   const companyName = job.company_name || "Unknown Company";
   const initial = companyName.charAt(0).toUpperCase();
+
+  // Extract Location Logic ---
+  const displayLocation = useMemo(() => {
+    // If the API has a dedicated location field, use it first
+    if (job.location) {
+      return job.location;
+    }
+
+    // If no location, try to parse it from the HTML description
+    if (job.description) {
+      try {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(job.description, "text/html");
+
+        // Look for the specific "Location" key in the scraped HTML
+        const titles = Array.from(doc.querySelectorAll(".jkey-title"));
+        const titleNode = titles.find((el) =>
+          el.textContent.toLowerCase().includes("location")
+        );
+
+        if (titleNode) {
+          const infoNode = titleNode.nextElementSibling;
+          if (infoNode) {
+            return infoNode.textContent.trim();
+          }
+        }
+      } catch (e) {
+        // Silently fail if parsing errors
+      }
+    }
+
+    // 3. Final Fallback
+    return "Remote / Unknown";
+  }, [job.location, job.description]);
 
   // Format Date (Handle if date is invalid)
   let timeAgo = "Recently";
@@ -78,7 +112,7 @@ function JobCard({ job }) {
       <div className="flex items-center gap-6 mt-auto pt-2 text-slate-500 text-sm">
         <div className="flex items-center gap-1.5">
           <MapPin className="w-4 h-4 text-blue-600" />
-          <p>{job.location || "Remote"}</p>
+          <p>{displayLocation}</p>
         </div>
         <div className="flex items-center gap-1.5">
           <Clock className="w-4 h-4 text-blue-600" />
